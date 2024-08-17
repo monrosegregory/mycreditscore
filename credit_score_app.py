@@ -7,10 +7,29 @@ from sklearn.linear_model import LogisticRegression
 import shap
 import matplotlib.pyplot as plt
 
+# Custom CSS for consistent branding and design
+st.markdown("""
+    <style>
+    .main { 
+        background-color: #f5f5f5;
+    }
+    .sidebar .sidebar-content {
+        background-color: #30475e;
+        color: white;
+    }
+    .stButton>button {
+        background-color: #f05454;
+        color: white;
+        border-radius: 5px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Streamlit UI
 st.title('Credit Score Prediction with Explainable AI')
+st.markdown("### Understand your financial health with AI-driven insights.")
 
-# Load the dataset from the uploaded file
+# Load the dataset
 data = pd.read_csv('/mnt/data/default_of_credit_card_clients.csv')
 
 # Preprocess data
@@ -61,7 +80,7 @@ prediction = model.predict(input_scaled)
 prediction_proba = model.predict_proba(input_scaled)
 
 st.subheader('Prediction')
-st.write('Default' if prediction[0] else 'No Default')
+st.write('Your predicted credit status is:', 'Default' if prediction[0] else 'No Default')
 
 st.subheader('Prediction Probability')
 st.write(f'Probability of Default: {prediction_proba[0][1]:.2f}')
