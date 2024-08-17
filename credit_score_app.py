@@ -10,9 +10,8 @@ import matplotlib.pyplot as plt
 # Streamlit UI
 st.title('Credit Score Prediction with Explainable AI')
 
-# Load a predefined dataset
-# For demonstration, let's use a sample dataset. Replace this with your actual dataset.
-data = pd.read_csv('sample_credit_data.csv')
+# Load the dataset from the uploaded file
+data = pd.read_csv('/mnt/data/default_of_credit_card_clients.csv')
 
 # Preprocess data
 if 'ID' in data.columns:
