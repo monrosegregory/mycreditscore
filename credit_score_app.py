@@ -8,7 +8,8 @@ import shap
 import matplotlib.pyplot as plt
 
 # Load and preprocess data
-data = pd.read_csv('C:/Users/c23085170/Downloads/project/default_of_credit_card_clients.csv', header=1)
+data = pd.read_csv('data/default_of_credit_card_clients.csv', header=1)
+
 
 if 'ID' in data.columns:
     data.drop('ID', axis=1, inplace=True)
