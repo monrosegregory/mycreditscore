@@ -29,15 +29,18 @@ if uploaded_file is not None:
     if target_column not in data.columns:
         target_column = 'default.payment.next.month'
 
-    X = data.drop(target_column, axis=1)  # This defines the feature matrix X
+    X = data.drop(target_column, axis=1)
     y = data[target_column]
 
+    # Split data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    # Standardize features
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
+    # Train model
     model = LogisticRegression(random_state=42)
     model.fit(X_train_scaled, y_train)
 
@@ -46,7 +49,7 @@ if uploaded_file is not None:
 
     def user_input_features():
         features = {}
-        for col in X.columns:  # This is where X is being referenced
+        for col in X.columns:
             features[col] = st.sidebar.number_input(f'{col}', min_value=float(X[col].min()), max_value=float(X[col].max()), value=float(X[col].mean()))
         return pd.DataFrame(features, index=[0])
 
@@ -76,18 +79,24 @@ if uploaded_file is not None:
     shap_plot = shap.force_plot(explainer.expected_value, shap_values_input[0, :], input_df, matplotlib=True)
 
     # Display the force plot in Streamlit
-    st.pyplot(plt.gcf())  # Get the current figure and pass it to st.pyplot
+    st.pyplot(plt.gcf())
 
     # SHAP Summary Plot
     st.subheader('SHAP Summary Plot')
 
-    # Create a new figure for the summary plot
     fig, ax = plt.subplots()
-
-    # Generate the SHAP summary plot (without the ax parameter)
     shap.summary_plot(shap_values_input, input_df, show=False)
-
-    # Display the plot in Streamlit
     st.pyplot(fig)
+
+    # Additional Feature: SHAP Bar Plot for better interpretability
+    st.subheader('SHAP Bar Plot of Feature Importance')
+    shap.bar_plot = shap.plots.bar(shap_values_input)
+    st.pyplot(plt.gcf())
+
+    # Feedback form
+    st.subheader('User Feedback')
+    feedback = st.text_area('Provide your feedback on the model and its explanation:')
+    if st.button('Submit Feedback'):
+        st.write('Thank you for your feedback!')
 else:
     st.write("Please upload a CSV file.")
