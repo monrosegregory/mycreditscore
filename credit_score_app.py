@@ -15,7 +15,8 @@ st.markdown("### Understand your financial health with AI-driven insights.")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
-    st.write(data.columns)  # Debug: Print out the column names
+    st.write("### Columns in the dataset:")
+    st.write(data.columns)  # Display the column names for debugging purposes
 else:
     st.error("Please upload the dataset to proceed.")
     st.stop()  # Stop execution if no file is uploaded
