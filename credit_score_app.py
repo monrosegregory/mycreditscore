@@ -84,8 +84,8 @@ if uploaded_file is not None:
     # Create a new figure for the summary plot
     fig, ax = plt.subplots()
 
-    # Generate the SHAP summary plot
-    shap.summary_plot(shap_values_input, input_df, show=False, ax=ax)
+    # Generate the SHAP summary plot (without the ax parameter)
+    shap.summary_plot(shap_values_input, input_df, show=False)
 
     # Display the plot in Streamlit
     st.pyplot(fig)
