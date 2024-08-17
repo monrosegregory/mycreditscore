@@ -7,30 +7,17 @@ from sklearn.linear_model import LogisticRegression
 import shap
 import matplotlib.pyplot as plt
 
-# Custom CSS for consistent branding and design
-st.markdown("""
-    <style>
-    .main { 
-        background-color: #f5f5f5;
-    }
-    .sidebar .sidebar-content {
-        background-color: #30475e;
-        color: white;
-    }
-    .stButton>button {
-        background-color: #f05454;
-        color: white;
-        border-radius: 5px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
 # Streamlit UI
 st.title('Credit Score Prediction with Explainable AI')
 st.markdown("### Understand your financial health with AI-driven insights.")
 
-# Load the dataset
-data = pd.read_csv('/mnt/data/default_of_credit_card_clients.csv')
+# File uploader for the dataset
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+if uploaded_file is not None:
+    data = pd.read_csv(uploaded_file)
+else:
+    st.error("Please upload the dataset to proceed.")
+    st.stop()  # Stop execution if no file is uploaded
 
 # Preprocess data
 if 'ID' in data.columns:
