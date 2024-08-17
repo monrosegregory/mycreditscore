@@ -15,6 +15,7 @@ st.markdown("### Understand your financial health with AI-driven insights.")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
+    st.write(data.columns)  # Debug: Print out the column names
 else:
     st.error("Please upload the dataset to proceed.")
     st.stop()  # Stop execution if no file is uploaded
@@ -29,10 +30,17 @@ for col in data.columns:
 
 data.fillna(data.median(), inplace=True)
 
+# Check for the correct target column
 target_column = 'default payment next month'
 if target_column not in data.columns:
-    target_column = 'default.payment.next.month'
+    alternative_column = 'default.payment.next.month'
+    if alternative_column in data.columns:
+        target_column = alternative_column
+    else:
+        st.error(f"The target column '{target_column}' was not found in the dataset.")
+        st.stop()
 
+# Continue with data preparation
 X = data.drop(target_column, axis=1)
 y = data[target_column]
 
