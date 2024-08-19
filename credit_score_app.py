@@ -7,9 +7,11 @@ from sklearn.linear_model import LogisticRegression
 import shap
 import matplotlib.pyplot as plt
 
-# Function to load and preprocess data
-def load_and_preprocess_data(uploaded_file):
-    data = pd.read_csv(uploaded_file)
+# Load and preprocess data
+def load_and_preprocess_data():
+    # Replace this with your dataset
+    data = pd.read_csv('path/to/your/dataset.csv')  # Replace with the correct path to your dataset
+    
     if 'ID' in data.columns:
         data.drop('ID', axis=1, inplace=True)
 
@@ -19,7 +21,7 @@ def load_and_preprocess_data(uploaded_file):
     data.fillna(data.median(), inplace=True)
     return data
 
-# Function to validate and extract target column
+# Validate and extract target column
 def get_target_column(data):
     target_column = 'default payment next month'
     if target_column not in data.columns:
@@ -31,7 +33,7 @@ def get_target_column(data):
             st.stop()
     return target_column
 
-# Function to split and scale data
+# Split and scale data
 def split_and_scale_data(data, target_column):
     X = data.drop(target_column, axis=1)
     y = data[target_column]
@@ -41,13 +43,13 @@ def split_and_scale_data(data, target_column):
     X_test_scaled = scaler.transform(X_test)
     return X_train_scaled, X_test_scaled, y_train, y_test, scaler
 
-# Function to train the model
+# Train the model
 def train_model(X_train_scaled, y_train):
     model = LogisticRegression(random_state=42)
     model.fit(X_train_scaled, y_train)
     return model
 
-# Function to get user input
+# Get user input features
 def user_input_features(X):
     features = {}
     st.sidebar.header('User Input Parameters')
@@ -55,7 +57,7 @@ def user_input_features(X):
         features[col] = st.sidebar.number_input(f'{col}', min_value=float(X[col].min()), max_value=float(X[col].max()), value=float(X[col].mean()))
     return pd.DataFrame(features, index=[0])
 
-# Function to generate SHAP plots
+# Generate SHAP plots
 def generate_shap_plots(model, X_train_scaled, input_scaled, input_df):
     explainer = shap.LinearExplainer(model, X_train_scaled)
     shap_values_input = explainer.shap_values(input_scaled)
@@ -78,14 +80,9 @@ def main():
     st.title('Credit Score Prediction with Explainable AI')
     st.markdown("### Understand your financial health with AI-driven insights.")
 
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    if uploaded_file is not None:
-        data = load_and_preprocess_data(uploaded_file)
-        st.write("### Columns in the dataset:")
-        st.write(data.columns)
-    else:
-        st.error("Please upload the dataset to proceed.")
-        st.stop()
+    data = load_and_preprocess_data()
+    st.write("### Columns in the dataset:")
+    st.write(data.columns)
 
     target_column = get_target_column(data)
     X_train_scaled, X_test_scaled, y_train, y_test, scaler = split_and_scale_data(data, target_column)
