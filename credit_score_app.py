@@ -6,7 +6,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 import matplotlib.pyplot as plt
 
+# Constants for categorical options
+EDUCATION_OPTIONS = ["Graduate School", "University", "High School", "Others"]
+MARRIAGE_OPTIONS = ["Married", "Single", "Others"]
+PAY_STATUS_OPTIONS = ["On Time", "1 Month Late", "2 Months Late", "3+ Months Late"]
+
+@st.cache_data
 def create_model():
+    """Create and train the model."""
     feature_names = ['LIMIT_BAL', 'SEX', 'EDUCATION', 'MARRIAGE', 'AGE',
                      'PAY_0', 'PAY_2', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6',
                      'BILL_AMT1', 'BILL_AMT2', 'BILL_AMT3', 'BILL_AMT4',
@@ -22,30 +29,31 @@ def create_model():
     return model, feature_names
 
 def get_user_input():
+    """Collect and return user input as a dictionary."""
     st.header("Input Your Financial Data")
 
-    education_options = ["Graduate School", "University", "High School", "Others"]
-    marriage_options = ["Married", "Single", "Others"]
-    pay_status_options = ["On Time", "1 Month Late", "2 Months Late", "3+ Months Late"]
-
     with st.form(key='user_input_form'):
-        limit_bal = st.number_input("Credit Limit Balance (e.g., $10,000)", min_value=0, help="Total amount of credit available to you.")
-        sex = st.selectbox("Sex", options=["Male", "Female"], help="Your gender.")
-        education = st.selectbox("Education Level", options=education_options, help="Your highest education level.")
-        marriage = st.selectbox("Marital Status", options=marriage_options, help="Your marital status.")
-        age = st.slider("Age", min_value=18, max_value=100, help="Your current age.")
+        col1, col2 = st.columns(2)
 
-        st.subheader("Payment History (Past 7 Months)")
-        pay_status = []
-        for i in range(7):
-            pay_status.append(st.selectbox(f"Payment Status {i}th Last Month", options=pay_status_options, index=0))
-        
-        st.subheader("Billing & Payment Amounts")
-        bill_amt = []
-        pay_amt = []
-        for i in range(1, 7):
-            bill_amt.append(st.number_input(f"Bill Amount for Month {i}", min_value=0, help=f"Bill amount for the {i}th last month."))
-            pay_amt.append(st.number_input(f"Payment Amount for Month {i}", min_value=0, help=f"Payment amount for the {i}th last month."))
+        with col1:
+            limit_bal = st.number_input("Credit Limit Balance", min_value=0, help="Total amount of credit available to you.")
+            sex = st.selectbox("Sex", options=["Male", "Female"], help="Your gender.")
+            education = st.selectbox("Education Level", options=EDUCATION_OPTIONS, help="Your highest education level.")
+            marriage = st.selectbox("Marital Status", options=MARRIAGE_OPTIONS, help="Your marital status.")
+            age = st.slider("Age", min_value=18, max_value=100, help="Your current age.")
+
+        with col2:
+            st.subheader("Payment History (Past 7 Months)")
+            pay_status = []
+            for i in range(7):
+                pay_status.append(st.selectbox(f"Payment Status {i+1} Month(s) Ago", options=PAY_STATUS_OPTIONS, index=0))
+            
+            st.subheader("Billing & Payment Amounts")
+            bill_amt = []
+            pay_amt = []
+            for i in range(1, 7):
+                bill_amt.append(st.number_input(f"Bill Amount for Month {i}", min_value=0, help=f"Bill amount for the {i}th last month."))
+                pay_amt.append(st.number_input(f"Payment Amount for Month {i}", min_value=0, help=f"Payment amount for the {i}th last month."))
 
         submit_button = st.form_submit_button(label='Get Prediction')
     
@@ -53,15 +61,15 @@ def get_user_input():
         return {
             'LIMIT_BAL': limit_bal,
             'SEX': 1 if sex == "Male" else 2,
-            'EDUCATION': education_options.index(education) + 1,
-            'MARRIAGE': marriage_options.index(marriage) + 1,
+            'EDUCATION': EDUCATION_OPTIONS.index(education) + 1,
+            'MARRIAGE': MARRIAGE_OPTIONS.index(marriage) + 1,
             'AGE': age,
-            'PAY_0': pay_status_options.index(pay_status[0]) - 1,
-            'PAY_2': pay_status_options.index(pay_status[1]) - 1,
-            'PAY_3': pay_status_options.index(pay_status[2]) - 1,
-            'PAY_4': pay_status_options.index(pay_status[3]) - 1,
-            'PAY_5': pay_status_options.index(pay_status[4]) - 1,
-            'PAY_6': pay_status_options.index(pay_status[5]) - 1,
+            'PAY_0': PAY_STATUS_OPTIONS.index(pay_status[0]) - 1,
+            'PAY_2': PAY_STATUS_OPTIONS.index(pay_status[1]) - 1,
+            'PAY_3': PAY_STATUS_OPTIONS.index(pay_status[2]) - 1,
+            'PAY_4': PAY_STATUS_OPTIONS.index(pay_status[3]) - 1,
+            'PAY_5': PAY_STATUS_OPTIONS.index(pay_status[4]) - 1,
+            'PAY_6': PAY_STATUS_OPTIONS.index(pay_status[5]) - 1,
             'BILL_AMT1': bill_amt[0],
             'BILL_AMT2': bill_amt[1],
             'BILL_AMT3': bill_amt[2],
@@ -78,6 +86,7 @@ def get_user_input():
     return None
 
 def main():
+    """Main function to run the Streamlit app."""
     st.title("Credit Scoring AI Prototype")
 
     st.write("""
