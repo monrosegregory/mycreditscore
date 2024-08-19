@@ -7,30 +7,43 @@ from sklearn.linear_model import LogisticRegression
 import shap
 import matplotlib.pyplot as plt
 
-# Load and preprocess data
+# Load and preprocess predefined data
 def load_and_preprocess_data():
-    # Replace this with your dataset
-    data = pd.read_csv('path/to/your/dataset.csv')  # Replace with the correct path to your dataset
-    
-    if 'ID' in data.columns:
-        data.drop('ID', axis=1, inplace=True)
-
-    for col in data.columns:
-        if data[col].dtype == 'object':
-            data[col] = pd.to_numeric(data[col], errors='coerce')
-    data.fillna(data.median(), inplace=True)
+    # Create a sample dataset
+    data = pd.DataFrame({
+        'LIMIT_BAL': np.random.randint(10000, 500000, 1000),
+        'SEX': np.random.choice([1, 2], 1000),
+        'EDUCATION': np.random.choice([1, 2, 3, 4], 1000),
+        'MARRIAGE': np.random.choice([1, 2, 3], 1000),
+        'AGE': np.random.randint(21, 79, 1000),
+        'PAY_0': np.random.choice([-1, 0, 1, 2, 3], 1000),
+        'PAY_2': np.random.choice([-1, 0, 1, 2, 3], 1000),
+        'PAY_3': np.random.choice([-1, 0, 1, 2, 3], 1000),
+        'PAY_4': np.random.choice([-1, 0, 1, 2, 3], 1000),
+        'PAY_5': np.random.choice([-1, 0, 1, 2, 3], 1000),
+        'PAY_6': np.random.choice([-1, 0, 1, 2, 3], 1000),
+        'BILL_AMT1': np.random.randint(0, 100000, 1000),
+        'BILL_AMT2': np.random.randint(0, 100000, 1000),
+        'BILL_AMT3': np.random.randint(0, 100000, 1000),
+        'BILL_AMT4': np.random.randint(0, 100000, 1000),
+        'BILL_AMT5': np.random.randint(0, 100000, 1000),
+        'BILL_AMT6': np.random.randint(0, 100000, 1000),
+        'PAY_AMT1': np.random.randint(0, 50000, 1000),
+        'PAY_AMT2': np.random.randint(0, 50000, 1000),
+        'PAY_AMT3': np.random.randint(0, 50000, 1000),
+        'PAY_AMT4': np.random.randint(0, 50000, 1000),
+        'PAY_AMT5': np.random.randint(0, 50000, 1000),
+        'PAY_AMT6': np.random.randint(0, 50000, 1000),
+        'default payment next month': np.random.choice([0, 1], 1000)
+    })
     return data
 
 # Validate and extract target column
 def get_target_column(data):
     target_column = 'default payment next month'
     if target_column not in data.columns:
-        alternative_column = 'default.payment.next.month'
-        if alternative_column in data.columns:
-            target_column = alternative_column
-        else:
-            st.error(f"The target column '{target_column}' was not found in the dataset.")
-            st.stop()
+        st.error(f"The target column '{target_column}' was not found in the dataset.")
+        st.stop()
     return target_column
 
 # Split and scale data
