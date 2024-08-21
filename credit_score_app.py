@@ -156,10 +156,17 @@ if st.button("Get My Credit Risk Report"):
     ax.invert_yaxis()
     st.pyplot(fig)
 
+    # Feature Importance Explanation
     st.write("""
-    ### Understanding Your Risk:
-    - The higher the bar for a factor, the more it affects your credit risk.
-    - Recent payment history is often the most significant factor.
+    ### What Does This Mean?
+    - The chart above shows the different factors that influence your credit score. The taller the bar, the more that factor affects your score.
+    - For example, if 'Payment History' has the tallest bar, it means that your recent payments have the biggest impact on your credit risk.
+    - By understanding which factors are most important, you can focus on the areas that will help you improve your credit score the most.
+    """)
+
+    st.write("""
+    ### Try It Yourself
+    - Adjust the information you entered above, like your 'Total Credit Available' or 'Payment History', and see how the feature importance changes. This will help you learn which financial behaviors are most important for maintaining a good credit score.
     """)
 
     st.write("""
@@ -169,4 +176,8 @@ if st.button("Get My Credit Risk Report"):
     - **Maintain Stable Credit History**: Avoid frequent applications for new credit.
     """)
 
-
+# Disclaimer at the bottom
+st.markdown("""
+## Disclaimer
+Please note that this tool uses a logistic regression model trained on sample data to provide an illustrative assessment of credit risk. The results are intended to help you understand the factors that may influence credit risk, rather than provide definitive financial advice.
+""")
