@@ -169,8 +169,4 @@ if st.button("Get My Credit Risk Report"):
     - **Maintain Stable Credit History**: Avoid frequent applications for new credit.
     """)
 
-# Disclaimer at the bottom
-st.markdown("""
-## Disclaimer
-Please note that this tool uses a logistic regression model trained on sample data to provide an illustrative assessment of credit risk. The results are intended to help you understand the factors that may influence credit risk, rather than provide definitive financial advice.
-""")
+
