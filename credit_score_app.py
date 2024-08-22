@@ -159,21 +159,23 @@ if st.button("Get My Credit Risk Report"):
     # Feature Importance Explanation
     st.write("""
     ### What Does This Mean?
-    - The chart above shows the different factors that influence your credit score. The taller the bar, the more that factor affects your score.
-    - For example, if 'Payment History' has the tallest bar, it means that your recent payments have the biggest impact on your credit risk.
-    - By understanding which factors are most important, you can focus on the areas that will help you improve your credit score the most.
+    - The chart above shows the different things that affect your credit score.
+    - Each bar represents a factor, like your payment history or how much credit you have available. The taller the bar, the more important that factor is in determining your credit risk.
+    - For example, if the bar for 'Recent Payment History' is the tallest, it means that how you've paid your bills recently has the biggest impact on your credit score.
+    - Knowing which factors are most important can help you focus on the areas that will have the greatest effect on improving your credit score.
     """)
 
     st.write("""
-    ### Try It Yourself
-    - Adjust the information you entered above, like your 'Total Credit Available' or 'Payment History', and see how the feature importance changes. This will help you learn which financial behaviors are most important for maintaining a good credit score.
+    ### How to Use This Information
+    - You can try changing the details you entered earlier (like how much credit you have or your payment history) and see how these changes affect the chart.
+    - This helps you understand which habits are helping your credit score and which ones might be hurting it.
     """)
 
     st.write("""
-    ### Personalized Recommendations:
-    - **Pay Your Bills On Time**: Late payments can drastically increase your credit risk.
-    - **Reduce Credit Usage**: Try to use less than 30% of your available credit.
-    - **Maintain Stable Credit History**: Avoid frequent applications for new credit.
+    ### Simple Tips for Improving Your Score:
+    - **Pay Your Bills on Time:** Even one late payment can really hurt your score.
+    - **Use Less Credit:** Try not to max out your credit cards; keeping your balances low helps.
+    - **Avoid Opening Too Many New Accounts:** Each new credit account can lower your score temporarily.
     """)
 
 # Disclaimer at the bottom
