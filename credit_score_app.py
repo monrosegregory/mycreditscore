@@ -6,6 +6,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 import matplotlib.pyplot as plt
+from watchdog.observers.polling import PollingObserver as Observer  # Added import
 
 # Sample trained logistic regression model
 feature_names = ['Total Credit Available', 'Gender', 'Education Level', 'Marital Status', 'Age',
@@ -17,6 +18,11 @@ feature_names = ['Total Credit Available', 'Gender', 'Education Level', 'Marital
 # Creating a dummy logistic regression model
 X_train = pd.DataFrame(np.random.rand(100, len(feature_names)), columns=feature_names)
 y_train = np.random.randint(2, size=100)
+
+# Create a pipeline that scales the data then applies logistic regression
+model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000))
+model.fit(X_train, y_train)
+
 
 # Create a pipeline that scales the data then applies logistic regression
 model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000))
