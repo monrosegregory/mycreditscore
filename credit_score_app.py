@@ -1,12 +1,11 @@
 import streamlit as st
-import os
-import numpy as np
 import pandas as pd
+import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
+import shap
 import matplotlib.pyplot as plt
-from watchdog.observers.polling import PollingObserver as Observer  # Added import
 
 # Sample trained logistic regression model
 feature_names = ['Total Credit Available', 'Gender', 'Education Level', 'Marital Status', 'Age',
@@ -18,11 +17,6 @@ feature_names = ['Total Credit Available', 'Gender', 'Education Level', 'Marital
 # Creating a dummy logistic regression model
 X_train = pd.DataFrame(np.random.rand(100, len(feature_names)), columns=feature_names)
 y_train = np.random.randint(2, size=100)
-
-# Create a pipeline that scales the data then applies logistic regression
-model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000))
-model.fit(X_train, y_train)
-
 
 # Create a pipeline that scales the data then applies logistic regression
 model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000))
@@ -145,47 +139,21 @@ if st.button("Get My Credit Risk Report"):
 
     st.subheader(f"Your Predicted Risk of Default: {prob_default:.2f}")
 
-    # Explanation
-    logistic_model = model.named_steps['logisticregression']
-    importance = logistic_model.coef_[0]
+    # SHAP explanation
+    st.write("### Explanation of Your Credit Risk")
+    explainer = shap.Explainer(model.named_steps['logisticregression'], X_train)
+    shap_values = explainer(user_data)
 
-    # Sorting the features by importance
-    indices = np.argsort(importance)[::-1]
-    sorted_feature_names = np.array(feature_names)[indices]
-    sorted_importance = importance[indices]
-
-    # Plotting feature importance
+    # Create a figure for the SHAP waterfall plot
     fig, ax = plt.subplots()
-    ax.barh(sorted_feature_names, sorted_importance, color='skyblue')
-    ax.set_xlabel('Feature Importance')
-    ax.set_title('Factors Influencing Your Credit Risk')
-    ax.invert_yaxis()
-    st.pyplot(fig)
+    shap.waterfall_plot(shap_values[0], show=False)  # Generate the waterfall plot
+    plt.gcf().axes[-1].set_box_aspect(1.0)  # Adjust the aspect ratio
+    st.pyplot(fig)  # Display the plot in Streamlit
 
     # Feature Importance Explanation
     st.write("""
     ### What Does This Mean?
-    - The chart above shows the different things that affect your credit score.
-    - Each bar represents a factor, like your payment history or how much credit you have available. The taller the bar, the more important that factor is in determining your credit risk.
-    - For example, if the bar for 'Recent Payment History' is the tallest, it means that how you've paid your bills recently has the biggest impact on your credit score.
-    - Knowing which factors are most important can help you focus on the areas that will have the greatest effect on improving your credit score.
+    - The SHAP values above show how much each factor contributed to your risk of default.
+    - Positive SHAP values push your score towards a higher risk, while negative SHAP values decrease your risk.
+    - Understanding these contributions can help you identify areas to improve your credit score.
     """)
-
-    st.write("""
-    ### How to Use This Information
-    - You can try changing the details you entered earlier (like how much credit you have or your payment history) and see how these changes affect the chart.
-    - This helps you understand which habits are helping your credit score and which ones might be hurting it.
-    """)
-
-    st.write("""
-    ### Simple Tips for Improving Your Score:
-    - **Pay Your Bills on Time:** Even one late payment can really hurt your score.
-    - **Use Less Credit:** Try not to max out your credit cards; keeping your balances low helps.
-    - **Avoid Opening Too Many New Accounts:** Each new credit account can lower your score temporarily.
-    """)
-
-# Disclaimer at the bottom
-st.markdown("""
-## Disclaimer
-Please note that this tool uses a logistic regression model trained on sample data to provide an illustrative assessment of credit risk. The results are intended to help you understand the factors that may influence credit risk, rather than provide definitive financial advice.
-""")
