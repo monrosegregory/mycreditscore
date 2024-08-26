@@ -7,20 +7,28 @@ from sklearn.pipeline import make_pipeline
 import shap
 import matplotlib.pyplot as plt
 
-# Sample trained logistic regression model
+# Feature names for the Logistic Regression model
 feature_names = ['Total Credit Available', 'Gender', 'Education Level', 'Marital Status', 'Age',
                  'Recent Payment Status', 'Payment Status 2 Months Ago', 'Payment Status 3 Months Ago',
                  'Bill Amount 1', 'Bill Amount 2', 'Bill Amount 3', 'Bill Amount 4',
                  'Bill Amount 5', 'Bill Amount 6', 'Payment Amount 1', 'Payment Amount 2', 
                  'Payment Amount 3', 'Payment Amount 4', 'Payment Amount 5', 'Payment Amount 6']
 
-# Creating a dummy logistic regression model
-X_train = pd.DataFrame(np.random.rand(100, len(feature_names)), columns=feature_names)
-y_train = np.random.randint(2, size=100)
+# Cache data loading and model training to optimize performance
+@st.cache_data
+def load_data():
+    # Load or generate your dataset here
+    return pd.DataFrame(np.random.rand(100, len(feature_names)), columns=feature_names), np.random.randint(2, size=100)
 
-# Create a pipeline that scales the data then applies logistic regression
-model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000))
-model.fit(X_train, y_train)
+@st.cache_data
+def train_model(X_train, y_train):
+    model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000))
+    model.fit(X_train, y_train)
+    return model
+
+# Load data and train the model
+X_train, y_train = load_data()
+model = train_model(X_train, y_train)
 
 # Streamlit UI
 st.title("Your Personalized Credit Risk Report")
@@ -59,15 +67,18 @@ marriage_options = {
     "Other": 3
 }
 
-with st.expander("Personal Information"):
+# Layout the input fields in two columns for better organization
+col1, col2 = st.columns(2)
+
+with col1:
     st.markdown("**Total Credit Available**: The maximum amount of credit you can use across all your accounts.")
     total_credit_available = st.number_input("Total Credit Available", min_value=0, help="Enter the total credit limit available to you across all your credit cards and lines of credit.")
-    
     gender = st.selectbox("Gender", options=list(gender_options.keys()), help="Select your gender.")
-    education = st.selectbox("Education Level", options=list(education_options.keys()), 
-                             help="Select your highest level of education.")
-    marital_status = st.selectbox("Marital Status", options=list(marriage_options.keys()), help="Select your marital status.")
     age = st.number_input("Your Age", min_value=18, max_value=100, help="Enter your age.")
+
+with col2:
+    education = st.selectbox("Education Level", options=list(education_options.keys()), help="Select your highest level of education.")
+    marital_status = st.selectbox("Marital Status", options=list(marriage_options.keys()), help="Select your marital status.")
 
 st.header("Step 2: Your Payment History")
 
@@ -151,9 +162,27 @@ if st.button("Get My Credit Risk Report"):
     st.pyplot(fig)  # Display the plot in Streamlit
 
     # Feature Importance Explanation
+
     st.write("""
     ### What Does This Mean?
     - The SHAP values above show how much each factor contributed to your risk of default.
     - Positive SHAP values push your score towards a higher risk, while negative SHAP values decrease your risk.
     - Understanding these contributions can help you identify areas to improve your credit score.
     """)
+
+    # Sidebar for educational content
+    st.sidebar.header("Learn More About Credit Scores")
+    st.sidebar.write("""
+    - **Credit Utilization:** Try to keep your credit utilization below 30% to maintain a healthy credit score.
+    - **Payment History:** Consistently paying your bills on time is crucial for a good credit score.
+    - **Length of Credit History:** The longer your credit history, the better your score. Avoid closing old accounts if possible.
+    - **New Credit:** Opening multiple new credit accounts in a short period can lower your score temporarily.
+    """)
+
+    # Sidebar for data privacy information
+    st.sidebar.header("Data Privacy and Security")
+    st.sidebar.write("""
+    We take your privacy seriously. Your data is only used for generating this credit risk report and is not stored or shared. 
+    All calculations are performed in-memory, and no data leaves your local machine or this application.
+    """)
+
